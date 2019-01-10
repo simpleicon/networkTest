@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Random;
 import java.util.Scanner;
 
-public class Client {
+public class Client2 {
 	
-	String host = "70.12.50.148";
+	//패드와의 통신
+	String host = "70.12.243.62";
 	int port = 8888;
 	
 	Scanner sc;
@@ -19,11 +21,12 @@ public class Client {
 	boolean flag = true; //서버에 소켓 생성 요청 
 	Sender sender;
 	
-	public Client() throws IOException {
+	public Client2() throws IOException {
 		while(flag) {
 			try {
 				socket = new Socket(host, port);
 				if(socket.isConnected()) {
+					System.out.println("connected!");
 					break; // 서버와 소켓 연결되면 루프 빠짐 
 				}
 			} catch (Exception e) {
@@ -45,18 +48,40 @@ public class Client {
 	
 	public void start() throws IOException {
 		System.out.println("Start Client");
-		sc = new Scanner(System.in);
+		Random ran = new Random();
 		while(flag) {
-			System.out.println("Input Msg: 000100, 011500, 020088");
-			String msg = sc.nextLine();
 			
-			if(msg.equals("q")) {
-				break;
+			//세가지 경우(00,01,02)를  데이터(ex 000100, 011500, 020088)와 함께 랜덤하게 만들어서 서버로 전송
+			// 0.5초에 한번씩
+			String rannum =  "0"+ ran.nextInt(3);
+			String msg = null;
+//			System.out.println("rannum : " +rannum);
+			
+			if(rannum.equals("00")) {
+				msg = rannum + String.format("%04d", ran.nextInt(200));
+//				System.out.println(msg);
+			}else if(rannum.equals("01")) {
+				msg = rannum + String.format("%04d", ran.nextInt(9999));
+//				System.out.println(msg);
+			}else if(rannum.equals("02")) {
+				msg = rannum + String.format("%04d", ran.nextInt(100));
+//				System.out.println(msg);
 			}
+			
+//			if(msg.equals("q")) {
+//				break;
+//			}
 			//Ready to Send
 			sender = new Sender(socket);
 			sender.setMsg(msg);
 			sender.start();
+			
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		
 		}
 		try {
 			Thread.sleep(1000);
@@ -140,7 +165,7 @@ public class Client {
 	
 	public static void main(String[] args) {
 		try {
-			new Client().start();
+			new Client2().start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
