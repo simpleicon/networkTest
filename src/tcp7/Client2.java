@@ -1,4 +1,4 @@
-package tcp6;
+package tcp7;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
