@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class Client {
 	
-	String host = "70.12.242.198";
+	String host = "70.12.243.62";
 	int port = 8888;
 	
 	Scanner sc;
@@ -38,7 +38,6 @@ public class Client {
 		
 		//Ready to receive
 		new Receiver(socket).start();
-		
 	
 				
 	}

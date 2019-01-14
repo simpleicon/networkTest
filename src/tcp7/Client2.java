@@ -41,8 +41,6 @@ public class Client2 {
 		
 		//Ready to receive
 		new Receiver(socket).start();
-		
-	
 				
 	}
 	
@@ -122,7 +120,6 @@ public class Client2 {
 					e.printStackTrace();
 				}
 			}
-			
 		}
 		
 	}
