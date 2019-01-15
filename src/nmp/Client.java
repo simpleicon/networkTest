@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class Client {
 	
-	String host = "70.12.243.62";
+	String host = "70.12.244.144";
 	int port = 8888;
 	
 	Scanner sc;
@@ -46,15 +46,38 @@ public class Client {
 				
 	}
 	
-	public void chargeBattery() throws InterruptedException, IOException {
-		
-		while(battery >= 100) {
-			battery++;
-			Thread.sleep(1000);
-			sender = new Sender(socket);
-			sender.setMsg(battery+"");
-			sender.start();
-		}
+	public void chargeBattery() {
+		Runnable runnable = new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					sender = new Sender(socket);
+					sender.setMsg("000002"); 
+					sender.start();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				while(true) {
+					battery++;
+					try {
+						if(battery>=100) {
+							sender = new Sender(socket);
+							sender.setMsg("000000");
+							sender.start();
+							break;
+						}
+						sender = new Sender(socket);
+						sender.setMsg("0100"+battery); 
+						sender.start();
+						Thread.sleep(200);
+					} catch (IOException | InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		new Thread(runnable).start();
 	}
 	
 	public void start() throws IOException {
@@ -63,9 +86,6 @@ public class Client {
 		while(flag) {
 			System.out.println("Input Msg: 000100, 011500, 020088");
 			String msg = sc.nextLine();
-			
-			
-			
 			
 			if(msg.equals("q")) {
 				break;
@@ -138,10 +158,10 @@ public class Client {
 				try {
 					msg = dis.readUTF();
 					System.out.println("Server : " + msg);
-					if(msg == "1") {
+					if(msg.equals("1")) {
 						chargeBattery();
 					}
-				} catch (IOException | InterruptedException e) {
+				} catch (IOException e) {
 					System.out.println("DisConnected");
 					break;
 				}
